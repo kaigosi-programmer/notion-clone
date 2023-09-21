@@ -14,11 +14,6 @@ function App() {
     }
   })
   return (
-<<<<<<< HEAD
-    <div className="App">
-      こんにちは
-    </div>
-=======
     <ThemeProvider theme={theme}>
       <CssBaseline/>
       <Routes>
@@ -28,7 +23,6 @@ function App() {
         </Route>
       </Routes>
     </ThemeProvider>
->>>>>>> secound
   );
 }
 
