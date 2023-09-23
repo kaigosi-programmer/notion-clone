@@ -4,12 +4,23 @@ import React from 'react';
 import{Link}from 'react-router-dom';
 
 function Register() {
+  const handleSubmit=(e)=>{
+    e.preventDefault();
+    //入力欄の文字列を取得
+    const data=new FormData(e.target);
+    const username=data.get("username").trim();
+    const password=data.get("password")
+    const confirmPassword=data.get("confirmPassword")
+    console.log(username);
+    console.log(password);
+    console.log(confirmPassword);
+  }
   return (
     <>
-     <Box component="form">
+     <Box component="form" onSubmit={handleSubmit}>
         <TextField fullWidth id="username" label="お名前" margin="normal" name="username" required/>
         <TextField fullWidth id="password" label="パスワード" margin="normal" name="password" required type="password"/>
-        <TextField fullWidth id="confirmPassword" label="確認用パスワード" margin="normal" name="password" required type="password"/>
+        <TextField fullWidth id="confirmPassword" label="確認用パスワード" margin="normal" name="confirmPassword" required type="password"/>
         <LoadingButton sx={{mt:3,mb:2,}}fullWidth type="submit" loading={false} color="primary" variant="outlined">アカウント作成</LoadingButton>
         
     </Box>
