@@ -8,7 +8,8 @@ function Register() {
   const [usernameErrorText,setUsernameErrorText]=useState('');
   const [passwordErrorText,setPasswordErrorText]=useState('');
   const [confirmPasswordErrorText,setConfirmPasswordErrorText]=useState('');
-  const handleSubmit=(e)=>{
+  const [loading,setLoading]=useState(false);
+  const handleSubmit=async(e)=>{
     e.preventDefault();
     setConfirmPasswordErrorText('');
     setPasswordErrorText('');
@@ -35,23 +36,36 @@ function Register() {
       error=true;
       setConfirmPasswordErrorText("確認用パスワードを記入して下さい");
      }
+     if(password!==confirmPassword){
+      error=true;
+      setConfirmPasswordErrorText("パスワードと確認用パスワードが異なります")
+     }
     if(error)return;
+    setLoading(true);
     //新規登録APIを叩く
     try{
-     const res=authApi.register({username,password,confirmPassword});
+     const res=await authApi.register({username,password,confirmPassword});
      localStorage.setItem("token",res.token);
+     setLoading(false);
      console.log("新規登録に成功しました");
     }catch(err){
-      console.log(err)
+      const errors=err.data.errors;
+      errors.forEach(err=>{
+        console.log(err);
+        if(err.path==="username")setUsernameErrorText(err.msg);
+        if(err.path==="password")setPasswordErrorText(err.msg);
+        if(err.path==="confirmPassword")setConfirmPasswordErrorText(err.msg);
+      })
+      setLoading(false);
     }
   }
   return (
     <>
      <Box component="form" onSubmit={handleSubmit} noValidate>
-        <TextField fullWidth id="username" label="お名前" margin="normal" name="username" required helperText={usernameErrorText}/>
-        <TextField fullWidth id="password" label="パスワード" margin="normal" name="password" required type="password" helperText={passwordErrorText}/>
-        <TextField fullWidth id="confirmPassword" label="確認用パスワード" margin="normal" name="confirmPassword" required type="password" helperText={confirmPasswordErrorText}/>
-        <LoadingButton sx={{mt:3,mb:2,}}fullWidth type="submit" loading={false} color="primary" variant="outlined">アカウント作成</LoadingButton>
+        <TextField fullWidth id="username" label="お名前" margin="normal" name="username" required helperText={usernameErrorText} error={usernameErrorText!==""} disabled={loading}/>
+        <TextField fullWidth id="password" label="パスワード" margin="normal" name="password" required type="password" helperText={passwordErrorText} error={passwordErrorText!==""} disabled={loading}/>
+        <TextField fullWidth id="confirmPassword" label="確認用パスワード" margin="normal" name="confirmPassword" required type="password" helperText={confirmPasswordErrorText} error={confirmPasswordErrorText!==""} disabled={loading}/>
+        <LoadingButton sx={{mt:3,mb:2,}}fullWidth type="submit" loading={loading} color="primary" variant="outlined">アカウント作成</LoadingButton>
         
     </Box>
     <Button component={Link} to="/login">すでにアカウントを持っていますか❔ログイン</Button>
