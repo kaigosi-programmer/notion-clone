@@ -1,10 +1,22 @@
 import { Box } from '@mui/material';
 import { Container } from '@mui/system';
-import React from 'react';
-import { Outlet } from 'react-router';
+import React,{useEffect} from 'react';
+import { Outlet, useNavigate } from 'react-router';
 import notionLogo from '../../assets/images/notion-logo.png';
+import authUtils from '../../utils/authUtils';
 
 function AuthLayout() {
+    const navigate=useNavigate();
+    useEffect(()=>{
+        //JWTを持っているのか確認する
+       const checkAuth=async()=>{
+        //確認チェック
+       const isAuth=await authUtils.isAuthenticated();
+       console.log(isAuth._id);
+       if(isAuth)navigate('/');
+       }
+       checkAuth();
+    },[navigate])
     return (
         <div>
             <Container component="main" maxWidth="xs">

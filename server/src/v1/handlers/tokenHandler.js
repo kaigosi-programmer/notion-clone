@@ -4,7 +4,7 @@ const User =require('../models/user');
 const tokenDecode=(req)=>{
 const bearerHeader=req.headers["authorization"];
 if(bearerHeader){
-    const bearer=bearerHeader.split(" ")[2];
+    const bearer=bearerHeader.split(" ")[1];
 try{
    const decodedToken=JWT.verify(bearer,process.env.TOKEN_SECRET_KEY);
    return decodedToken;
@@ -21,7 +21,6 @@ exports.verifyToken=async(req,res,next)=>{
 const tokendecoded=tokenDecode(req);
 if(tokendecoded){
     //そのJWTと位置するユーザーを探してくる
-    console.log(tokendecoded);
     const user=await User.findById(tokendecoded.id);
     if(!user){
         return res.status(401).json("権限がありません");
