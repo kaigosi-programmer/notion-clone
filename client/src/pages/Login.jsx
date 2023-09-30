@@ -19,8 +19,6 @@ const navigate=useNavigate();
     const username=data.get("username").trim();
     const password=data.get("password")
   
-    console.log(username);
-    console.log(password);
 
     let error=false
     if(username===""){
@@ -36,7 +34,6 @@ const navigate=useNavigate();
     //新規登録APIを叩く
     try{
      const res=await authApi.login({username,password});
-     console.log(res.token);
      localStorage.setItem("token",res.token);
      setLoading(false);
      console.log("ログインに成功しました");
@@ -61,7 +58,7 @@ const navigate=useNavigate();
         <LoadingButton sx={{mt:3,mb:2,}}fullWidth type="submit" loading={loading} color="primary" variant="outlined">ログイン</LoadingButton>
         
     </Box>
-    <Button component={Link} to="/login">アカウントを持っていませんか❔新規登録</Button>
+    <Button component={Link} to="/register">アカウントを持っていませんか❔新規登録</Button>
     </>
    
   )
