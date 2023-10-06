@@ -1,30 +1,42 @@
-import { Drawer, ListItemButton,List,Box, Typography, IconButton } from '@mui/material'
-import React from 'react';
-import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
-import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
+import { Box, Drawer, IconButton, List, ListItemButton, Typography } from '@mui/material';
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
+import React, { useEffect } from 'react'
 import assets from '../../assets';
 import { Link, useNavigate } from 'react-router-dom';
-import{useSelector}from "react-redux";
-
+import {useSelector}from "react-redux";
+import memoApi from '../../api/memoApi';
 
 
 function Sidebar() {
     const navigate=useNavigate();
     const user=useSelector((state)=>state.user.value);
     const logout=()=>{
-        localStorage.removeItem('token');
+        localStorage.removeItem("token");
         navigate('/login');
     }
+
+    useEffect(()=>{
+        const getMemos=async()=>{
+         try{
+         const res=await memoApi.getAll();
+         console.log(res);
+         }catch(err){
+            alert(err);
+         }
+        }
+        getMemos();
+    },[])
   return (
-    <Drawer container={window.document.body} valiant="permament" open={true} sx={{width:250,height:"100vh"}}>
-        <List sx={{width:250,height:"100vh", backgroundColor:assets.colors.secondary}}>
+    <Drawer container={window.document.body} variant="permanent" open={true} sx={{width:250,height:"100vh"}}>
+        <List sx={{width:250,height:"100vh",backgroundColor:assets.colors.secondary}}>
             <ListItemButton>
                 <Box sx={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                     <Typography variant="body2" fontWeight="700">{user.username}</Typography>
+                    <IconButton onClick={logout}>
+                        <LogoutOutlinedIcon/>
+                    </IconButton>
                 </Box>
-                <IconButton onClick={logout}>
-                    <LogoutOutlinedIcon/>
-                </IconButton>
             </ListItemButton>
             <Box sx={{paddingTop:"10px"}}></Box>
             <ListItemButton>
@@ -36,16 +48,15 @@ function Sidebar() {
             <ListItemButton>
                 <Box sx={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                     <Typography variant="body2" fontWeight="700">プライベート</Typography>
+                    <IconButton>
+                        <AddBoxOutlinedIcon fontSize="small"/>
+                    </IconButton>
                 </Box>
-                <IconButton>
-                <AddBoxOutlinedIcon fontSize="small"/>
-                </IconButton>
             </ListItemButton>
-            <ListItemButton sx={{pl:"20px"}} component={Link} to="/memo/47324rhrh">
-                <Typography>📝仮置きのメモ</Typography>
+            <ListItemButton sx={{pl:"20px"}} conponent={Link} to="/mome/125647">
+                <Typography>📝無題</Typography>
             </ListItemButton>
         </List>
-        
     </Drawer>
   )
 }
