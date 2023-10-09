@@ -1,8 +1,6 @@
 import { Box } from '@mui/material';
-import { Container } from '@mui/system';
 import React,{useEffect} from 'react';
 import { Outlet, useNavigate } from 'react-router';
-import notionLogo from '../../assets/images/notion-logo.png';
 import authUtils from '../../utils/authUtils';
 import Sidebar from '../common/Sidebar';
 import { useDispatch } from 'react-redux';
@@ -16,13 +14,12 @@ function AppLayout() {
        const checkAuth=async()=>{
         //確認チェック
        const user=await authUtils.isAuthenticated();
-       console.log(user._id);
        if(!user){navigate('/login');}else{
        dispatch(setUser(user));
        }
        }
        checkAuth();
-    },[navigate])
+    },[navigate,dispatch])
     return (
         <div>
             <Box sx={{display:"flex"}}>

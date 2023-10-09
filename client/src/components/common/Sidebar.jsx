@@ -1,64 +1,81 @@
 import { Box, Drawer, IconButton, List, ListItemButton, Typography } from '@mui/material';
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import assets from '../../assets';
-import { Link, useNavigate } from 'react-router-dom';
-import {useSelector}from "react-redux";
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
 import memoApi from '../../api/memoApi';
+import { setMemo } from '../../redux/features/memoSlice';
 
 
 function Sidebar() {
-    const navigate=useNavigate();
-    const user=useSelector((state)=>state.user.value);
-    const logout=()=>{
+    const [activeIndex,setActiveIndex]=useState(0);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const{memoId}=useParams();
+    const memos = useSelector((state) => state.memo.value);
+    const user = useSelector((state) => state.user.value);
+    const logout = () => {
         localStorage.removeItem("token");
         navigate('/login');
     }
 
-    useEffect(()=>{
-        const getMemos=async()=>{
-         try{
-         const res=await memoApi.getAll();
-         console.log(res);
-         }catch(err){
-            alert(err);
-         }
+
+    useEffect(() => {
+        const getMemos = async () => {
+            try {
+                const res = await memoApi.getAll();
+                dispatch(setMemo(res));
+            } catch (err) {
+                alert(err);
+            }
         }
         getMemos();
-    },[])
-  return (
-    <Drawer container={window.document.body} variant="permanent" open={true} sx={{width:250,height:"100vh"}}>
-        <List sx={{width:250,height:"100vh",backgroundColor:assets.colors.secondary}}>
-            <ListItemButton>
-                <Box sx={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <Typography variant="body2" fontWeight="700">{user.username}</Typography>
-                    <IconButton onClick={logout}>
-                        <LogoutOutlinedIcon/>
-                    </IconButton>
-                </Box>
-            </ListItemButton>
-            <Box sx={{paddingTop:"10px"}}></Box>
-            <ListItemButton>
-                <Box sx={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <Typography variant="body2" fontWeight="700">お気に入り</Typography>
-                </Box>
-            </ListItemButton>
-            <Box sx={{paddingTop:"10px"}}></Box>
-            <ListItemButton>
-                <Box sx={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <Typography variant="body2" fontWeight="700">プライベート</Typography>
-                    <IconButton>
-                        <AddBoxOutlinedIcon fontSize="small"/>
-                    </IconButton>
-                </Box>
-            </ListItemButton>
-            <ListItemButton sx={{pl:"20px"}} conponent={Link} to="/mome/125647">
-                <Typography>📝無題</Typography>
-            </ListItemButton>
-        </List>
-    </Drawer>
-  )
+    }, [dispatch]);
+
+    useEffect(() => {
+     const activeIndex=memos.findIndex((e)=>e._id===memoId);
+     console.log(activeIndex);
+     setActiveIndex(activeIndex);
+    }
+    , [navigate,memos,memoId])
+
+    return (
+        <Drawer container={window.document.body} variant="permanent" open={true} sx={{ width: 250, height: "100vh" }}>
+            <List sx={{ width: 250, height: "100vh", backgroundColor: assets.colors.secondary }}>
+                <ListItemButton>
+                    <Box sx={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <Typography variant="body2" fontWeight="700">{user.username}</Typography>
+                        <IconButton onClick={logout}>
+                            <LogoutOutlinedIcon />
+                        </IconButton>
+                    </Box>
+                </ListItemButton>
+                <Box sx={{ paddingTop: "10px" }}></Box>
+                <ListItemButton>
+                    <Box sx={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <Typography variant="body2" fontWeight="700">お気に入り</Typography>
+                    </Box>
+                </ListItemButton>
+                <Box sx={{ paddingTop: "10px" }}></Box>
+                <ListItemButton>
+                    <Box sx={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <Typography variant="body2" fontWeight="700">プライベート</Typography>
+                        <IconButton>
+                            <AddBoxOutlinedIcon fontSize="small" />
+                        </IconButton>
+                    </Box>
+                </ListItemButton>
+                {memos.map((item, index) => (
+                    <ListItemButton selected={index === activeIndex} key={item._id} sx={{ pl: "20px" }} conponent={Link} to={`/memo/${item._id}`}>
+                        <Typography>{item.icon}{item.title}</Typography>
+                    </ListItemButton>
+                ))}
+
+            </List>
+        </Drawer>
+    )
 }
 
 export default Sidebar
