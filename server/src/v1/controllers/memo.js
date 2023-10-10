@@ -52,3 +52,14 @@ res.status(200).json(updatedMemo);
 res.status(500).json(err);
 }
 }
+
+exports.delete=async(req,res)=>{
+    const{memoId}=req.params;
+try{
+const memo=await Memo.deleteOne({_id:memoId});
+if(!memo)return res.status(404).json("メモが存在しません");
+res.status(200).json("メモを削除しました");
+}catch(err){
+res.status(500).json(err);
+}
+}
